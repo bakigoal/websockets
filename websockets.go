@@ -38,7 +38,8 @@ func readMessages(conn *websocket.Conn) {
 		}
 
 		// Print the message to the console
-		fmt.Printf("\n%s sent: %s\n", conn.RemoteAddr(), string(msg))
+		fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
+		fmt.Println()
 	}
 }
 
@@ -47,6 +48,7 @@ func publishMessages(conn *websocket.Conn) {
 		// Write message back to browser
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
+		fmt.Println()
 		msgBack := []byte(text)
 		if err := conn.WriteMessage(1, msgBack); err != nil {
 			return
