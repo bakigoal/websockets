@@ -14,12 +14,18 @@
     };
 
     socket.onmessage = function (e) {
-        output.innerHTML += "Server: " + e.data + "\n";
+        output.innerHTML += "\nServer: " + e.data.trim();
     };
+
+    input.onkeypress = function(e) {
+        if(e.keyCode === 13) {
+            send();
+        }
+    }
 
     function send() {
         socket.send(input.value);
-        output.innerHTML += "You: " + input.value + "\n";
+        output.innerHTML += "\nYou: " + input.value;
         input.value = "";
     }
 </script>

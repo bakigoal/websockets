@@ -18,25 +18,9 @@ func main() {
 	http.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
 		conn, _ := wsUpgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
 
-		for {
-			// Read message from browser
-			msgType, msg, err := conn.ReadMessage()
-			if err != nil {
-				return
-			}
-
-			// Print the message to the console
-			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-
-			// Write message back to browser
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Enter response: ")
-			text, _ := reader.ReadString('\n')
-			msgBack := []byte(text)
-			if err = conn.WriteMessage(msgType, msgBack); err != nil {
-				return
-			}
-		}
+		// Read message from browser
+		go readMessages(conn)
+		publishMessages(conn)
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -44,4 +28,28 @@ func main() {
 	})
 
 	http.ListenAndServe(":8080", nil)
+}
+
+func readMessages(conn *websocket.Conn) {
+	for {
+		_, msg, err := conn.ReadMessage()
+		if err != nil {
+			return
+		}
+
+		// Print the message to the console
+		fmt.Printf("\n%s sent: %s\n", conn.RemoteAddr(), string(msg))
+	}
+}
+
+func publishMessages(conn *websocket.Conn) {
+	for {
+		// Write message back to browser
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		msgBack := []byte(text)
+		if err := conn.WriteMessage(1, msgBack); err != nil {
+			return
+		}
+	}
 }
