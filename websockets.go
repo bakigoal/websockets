@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 )
@@ -27,7 +29,10 @@ func main() {
 			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
 
 			// Write message back to browser
-			msgBack := []byte("Thank you for \"" + string(msg) + "\"")
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Enter response: ")
+			text, _ := reader.ReadString('\n')
+			msgBack := []byte(text)
 			if err = conn.WriteMessage(msgType, msgBack); err != nil {
 				return
 			}
