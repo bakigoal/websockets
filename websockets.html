@@ -19,6 +19,7 @@
 
     function send() {
         socket.send(input.value);
+        output.innerHTML += "You: " + input.value + "\n";
         input.value = "";
     }
 </script>
